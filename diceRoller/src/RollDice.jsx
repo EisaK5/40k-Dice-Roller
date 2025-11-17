@@ -15,11 +15,12 @@ const [ap, setAp] = useState(0);
 const [damage, setDamage] = useState(2);
 const [wounds, setWounds] = useState(4);
 const [sustainedHits, setSustainedHits] = useState(0);
+const [lethalHits, setLethalHits] = useState(false);
 
 const [result, setResult] = useState(null);
 
 function handleRoll() {
-    const r = resolveAttack({attacks, bsWs, strength, toughness, save, invuln, ap, damage, wounds, sustainedHits,});
+    const r = resolveAttack({attacks, bsWs, strength, toughness, save, invuln, ap, damage, wounds, sustainedHits, lethalHits});
 
     setResult(r);
 }
@@ -82,7 +83,9 @@ return (
         <label>
             lethalHits:
             <input
-
+                type="checkbox"
+                checked={lethalHits}
+                onChange={(e) => setLethalHits(e.target.checked)} 
             />
         </label>
         <label>

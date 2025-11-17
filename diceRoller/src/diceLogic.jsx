@@ -39,22 +39,30 @@ export function rollAndCountSuccess(numDice, target, sides = 6) {
 }
 
 export function resolveAttack({
-    attacks, bsWs, strength, toughness, save, invuln, ap, damage, wounds, sustainedHits, sides = 6,
+    attacks, bsWs, strength, toughness, save, invuln, ap, damage, wounds, sustainedHits, lethalHits, sides = 6,
 }) {
     //hit roll + sustained hits
     const hitRolls = [];
     let hitCount = 0;
-
+    let lethalWounds = 0;
     for (let  i = 0; i < attacks; i++) {
         //roll a die
         const value = randomInt(1, sides);
         hitRolls.push(value); //store role for display
         
         if (value >= bsWs) {
-            hitCount += 1;
-
-            if (sustainedHits > 0 && value == 6)
+            //lethal hits and sustained hits, add a wound roll and add sustained num to hits
+            if (sustainedHits > 0 && lethalHits && value == 6) { 
                 hitCount += sustainedHits;
+                lethalWounds += 1;
+            } //only lethal hits add a wound roll
+            else if (lethalHits && value == 6)
+                lethalWounds += 1;
+            else if (sustainedHits > 0 && value == 6) //only sustained hits 
+                hitCount += sustainedHits + 1;
+            else //no lethals no sustained
+                hitCount += 1;
+
         }
     }
     
@@ -62,7 +70,7 @@ export function resolveAttack({
     //wound roll
     const woundTarget = getTarget(strength, toughness);
     const woundResult = rollAndCountSuccess(hitCount, woundTarget, sides);
-    const woundCount = woundResult.successes;
+    const woundCount = woundResult.successes + lethalWounds;
 
     let saveTarget;
     if (invuln > 0) { //invuln save allows static save
