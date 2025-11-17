@@ -39,37 +39,68 @@ export function rollAndCountSuccess(numDice, target, sides = 6) {
 }
 
 export function resolveAttack({
-    attacks, bsWs, strength, toughness, save, ap, damage, wounds, sides = 6,
+    attacks, bsWs, strength, toughness, save, invuln, ap, damage, wounds, sustainedHits, sides = 6,
 }) {
-    //hit roll
-    const hitResult = rollAndCountSuccess(attacks, bsWs, sides);
-    const hitCount = hitResult.successes;
+    //hit roll + sustained hits
+    const hitRolls = [];
+    let hitCount = 0;
+
+    for (let  i = 0; i < attacks; i++) {
+        //roll a die
+        const value = randomInt(1, sides);
+        hitRolls.push(value); //store role for display
+        
+        if (value >= bsWs) {
+            hitCount += 1;
+
+            if (sustainedHits > 0 && value == 6)
+                hitCount += sustainedHits;
+        }
+    }
+    
 
     //wound roll
     const woundTarget = getTarget(strength, toughness);
     const woundResult = rollAndCountSuccess(hitCount, woundTarget, sides);
     const woundCount = woundResult.successes;
 
-    //save roll
-    const saveTarget = save+ap;
-    const saveResult = rollAndCountSuccess(woundCount, saveTarget, sides);
-    const saveCount = saveResult.successes;
-    const failedSaves = woundCount - saveCount;
+    let saveTarget;
+    if (invuln > 0) { //invuln save allows static save
+        if (save+ap >= invuln) //if save roll with ap > invuln use invuln
+            saveTarget = invuln;
+        else //else save roll lower than invuln keep save
+            saveTarget = save+ap;
+    } else { //no invuln just go to normal save
+        saveTarget = save+ap;
+    }
+        const saveResult = rollAndCountSuccess(woundCount, saveTarget, sides);
+        const saveCount = saveResult.successes;
+        const failedSaves = woundCount - saveCount;
+    
+    
+    let modelsKilled = 0;
+    let currentWounds = wounds;
+    for (let i = 0; i < failedSaves; i++) {  //for splash damage
+        currentWounds -= damage;
 
-    //models killed
-    const totalDamage = failedSaves * damage;
-    const modelsKilled = Math.floor(totalDamage / wounds);
+        if (currentWounds <= 0) {
+             modelsKilled += 1;
+             currentWounds = wounds;
+        }
+
+
+    }
 
     return {
         hitTarget: bsWs, woundTarget, saveTarget,
 
-        hitRolls: hitResult.rolls, hitCount,
+        hitRolls, hitCount,
 
         woundRolls: woundResult.rolls, woundCount,
 
         saveRolls: saveResult.rolls, saveCount, failedSaves,
 
-        totalDamage, modelsKilled,
+        modelsKilled,
     };
 }
 

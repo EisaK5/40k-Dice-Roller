@@ -10,21 +10,22 @@ const [bsWs, setSkill] = useState(3);
 const [strength, setStrength] = useState(4);
 const [toughness, setToughness] = useState(4);
 const [save, setSave] = useState(3);
+const [invuln, setInvuln] = useState(4);
 const [ap, setAp] = useState(0);
 const [damage, setDamage] = useState(2);
 const [wounds, setWounds] = useState(4);
+const [sustainedHits, setSustainedHits] = useState(0);
 
 const [result, setResult] = useState(null);
 
 function handleRoll() {
-    const r = resolveAttack({attacks, bsWs, strength, toughness, save, ap, damage, wounds,});
+    const r = resolveAttack({attacks, bsWs, strength, toughness, save, invuln, ap, damage, wounds, sustainedHits,});
 
     setResult(r);
 }
 
 return (
     <div  className ="RollDice">
-        
         <label>
             Attacks:
             <input
@@ -71,6 +72,39 @@ return (
         </label>
 
         <label>
+            sustainedHits:
+            <input
+                type="number"
+                value={sustainedHits}
+                onChange={(e) => setSustainedHits(Number(e.target.value))}
+            />
+        </label>
+        <label>
+            lethalHits:
+            <input
+
+            />
+        </label>
+        <label>
+            devastatingWounds:
+            <input
+
+            />
+        </label>
+        <label>
+            rerollHits:
+            <input
+
+            />
+        </label>
+        <label>
+            rerollWounds:
+            <input
+
+            />
+        </label>
+        
+        <label>
             Toughness:
             <input
                 type="number"
@@ -88,11 +122,11 @@ return (
             /> 
         </label>
         <label>
-            Invuln:
+            Invunerable Save:
             <input
                 type="number"
-                value={save}
-                onChange={(e) => setSave(Number(e.target.value))}
+                value={invuln}
+                onChange={(e) => setInvuln(Number(e.target.value))}
             /> 
         </label>
         <label>
@@ -113,7 +147,6 @@ return (
 
                 <p>Failed saves: {result.failedSaves}</p>
 
-                <p>Total damage: {result.totalDamage}</p>
                 <p>Models killed: {result.modelsKilled}</p>
             </div>
         )}
