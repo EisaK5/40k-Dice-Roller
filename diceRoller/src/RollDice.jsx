@@ -16,11 +16,12 @@ const [damage, setDamage] = useState(2);
 const [wounds, setWounds] = useState(4);
 const [sustainedHits, setSustainedHits] = useState(0);
 const [lethalHits, setLethalHits] = useState(false);
+const [devastatingWounds, setDevastatingWounds] = useState(false);
 
 const [result, setResult] = useState(null);
 
 function handleRoll() {
-    const r = resolveAttack({attacks, bsWs, strength, toughness, save, invuln, ap, damage, wounds, sustainedHits, lethalHits});
+    const r = resolveAttack({attacks, bsWs, strength, toughness, save, invuln, ap, damage, wounds, sustainedHits, lethalHits, devastatingWounds});
 
     setResult(r);
 }
@@ -91,7 +92,9 @@ return (
         <label>
             devastatingWounds:
             <input
-
+                type="checkbox"
+                checked={devastatingWounds}
+                onChange={(e) => setDevastatingWounds(e.target.checked)}
             />
         </label>
         <label>
@@ -145,8 +148,10 @@ return (
         {result && (
             <div>
                 <p>Hits: {result.hitCount}</p>
+                <p>Lethal Hits: {result.lethalWounds}</p>
+                <p>Devastating Wounds: {result.devWounds}</p>
 
-                <p>Wounds: {result.woundCount}</p>
+                <p>Total Wounds: {result.woundCount}</p>
 
                 <p>Failed saves: {result.failedSaves}</p>
 

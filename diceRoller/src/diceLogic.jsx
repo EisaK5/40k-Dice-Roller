@@ -39,7 +39,7 @@ export function rollAndCountSuccess(numDice, target, sides = 6) {
 }
 
 export function resolveAttack({
-    attacks, bsWs, strength, toughness, save, invuln, ap, damage, wounds, sustainedHits, lethalHits, sides = 6,
+    attacks, bsWs, strength, toughness, save, invuln, ap, damage, wounds, sustainedHits, lethalHits, devastatingWounds, sides = 6,
 }) {
     //hit roll + sustained hits
     const hitRolls = [];
@@ -68,9 +68,26 @@ export function resolveAttack({
     
 
     //wound roll
+    //const woundTarget = getTarget(strength, toughness);
+    //const woundResult = rollAndCountSuccess(hitCount, woundTarget, sides);
+    let woundCount = lethalWounds;
+    const woundRolls = [];
     const woundTarget = getTarget(strength, toughness);
-    const woundResult = rollAndCountSuccess(hitCount, woundTarget, sides);
-    const woundCount = woundResult.successes + lethalWounds;
+    let devWounds = 0;
+    for (let i = 0; i < hitCount; i++) {
+        const value = randomInt(1, sides);
+        woundRolls.push(value);
+
+        if (value >= woundTarget) {
+            if (devastatingWounds && value == 6) {
+                devWounds += 1;
+            }
+            else {
+                woundCount += 1;
+            }
+        }
+    }
+
 
     let saveTarget;
     if (invuln > 0) { //invuln save allows static save
@@ -83,7 +100,7 @@ export function resolveAttack({
     }
         const saveResult = rollAndCountSuccess(woundCount, saveTarget, sides);
         const saveCount = saveResult.successes;
-        const failedSaves = woundCount - saveCount;
+        const failedSaves = (woundCount + devWounds) - saveCount;
     
     
     let modelsKilled = 0;
@@ -104,7 +121,7 @@ export function resolveAttack({
 
         hitRolls, hitCount,
 
-        woundRolls: woundResult.rolls, woundCount,
+        woundRolls, woundCount, lethalWounds, devWounds,
 
         saveRolls: saveResult.rolls, saveCount, failedSaves,
 
