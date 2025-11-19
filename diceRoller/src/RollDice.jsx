@@ -1,6 +1,6 @@
 //RollDice.js 
 import { useState } from "react";
-import { resolveAttack } from "./diceLogic.jsx";
+import { simulateManySequence } from "./diceLogic.jsx";
 import './RollDice.css'
 
 function RollDice() {
@@ -22,12 +22,13 @@ const [criticalWound, setCriticalWound] = useState(6);
 const [rerollHits, setRerollHits] = useState("");
 const [rerollWounds, setRerollWounds] = useState("");
 const [devastatingWounds, setDevastatingWounds] = useState(false);
+const [N, setN] = useState(100);
 
 const [result, setResult] = useState(null);
 
 function handleRoll() {
-    const r = resolveAttack({attacks, bsWs, strength, toughness, save, invuln, fnp, ap, damage, wounds, sustainedHits, lethalHits, criticalHit, criticalWound, rerollHits, rerollWounds, devastatingWounds});
-
+    //const r = resolveAttack({attacks, bsWs, strength, toughness, save, invuln, fnp, ap, damage, wounds, sustainedHits, lethalHits, criticalHit, criticalWound, rerollHits, rerollWounds, devastatingWounds});
+    const r = simulateManySequence({attacks, bsWs, strength, toughness, save, invuln, fnp, ap, damage, wounds, sustainedHits, lethalHits, criticalHit, criticalWound, rerollHits, rerollWounds, devastatingWounds, N})
     setResult(r);
 }
 
@@ -179,16 +180,26 @@ return (
             /> 
         </label>
 
+        <label>
+            Sample size:
+            <input
+                type="number"
+                value={N}
+                onChange={(e) => setN(Number(e.target.value))}
+            /> 
+        </label>
+
         <button onClick={handleRoll}>Roll</button>
         {result && (
             <div>
-                <p>Hits: {result.hitCount}</p>
-                <p>Lethal Hits: {result.lethalWounds}</p>
-                <p>Devastating Wounds: {result.devWounds}</p>
-                <p>Total Wounds: {result.woundCount}</p>
-                <p>Failed saves: {result.failedSaves}</p>
-                <p>Total damage: {result.failedSaves * damage}</p>
-                <p>Models killed: {result.modelsKilled}</p>
+                <p>Hits: {result.avgHits}</p>
+                <p>Lethal Hits: {result.avgLethalHits}</p>
+                <p>Devastating Wounds: {result.avgDevastatingWounds}</p>
+                <p>Total Wounds: {result.avgWounds}</p>
+                <p>Total saves: {result.avgSaves}</p>
+                <p>Failed saves: {result.avgFailedSaves}</p>
+                <p>Total damage: {result.avgModelsKilled * damage}</p>
+                <p>Models killed: {result.avgModelsKilled}</p>
             </div>
         )}
     </div>

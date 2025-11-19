@@ -38,9 +38,80 @@ export function rollAndCountSuccess(numDice, target, sides = 6) {
     };
 }
 
-export function resolveAttack({
-    attacks, bsWs, strength, toughness, save, invuln, fnp, ap, damage, wounds, sustainedHits, lethalHits, devastatingWounds, criticalHit, criticalWound, rerollHits, rerollWounds, sides = 6,
+//simulate average function
+//number n how many times the attack sequences are looped
+//get sums of key variables
+//each loop iteration adds to sum
+//then divide sum by n thats the average
+export function simulateManySequence({
+    attacks, bsWs, strength, toughness, save, invuln, fnp, ap, damage, wounds, sustainedHits, lethalHits, criticalHit, criticalWound, rerollHits, rerollWounds, devastatingWounds, N
 }) {
+    let sumHits = 0;
+    let sumLethalHits = 0;
+    let sumWounds = 0;
+    let sumDevastatingWounds = 0;
+    let sumSaves = 0;
+    let sumFailedSaves = 0;
+    let sumModelsKilled = 0;
+
+    for (let i = 0; i < N; i++) {
+        const result = resolveAttack({   attacks,
+                                        bsWs,
+                                        strength,
+                                        toughness,
+                                        save,
+                                        invuln,
+                                        fnp,
+                                        ap,
+                                        damage,
+                                        wounds,
+                                        sustainedHits,
+                                        lethalHits,
+                                        devastatingWounds,
+                                        criticalHit,
+                                        criticalWound,
+                                        rerollHits,
+                                        rerollWounds, })
+        sumHits += result.hitCount;
+        sumLethalHits += result.lethalWounds;
+        sumWounds += result.woundCount;
+        sumDevastatingWounds += result.devWounds;
+        sumSaves += result.saveCount;
+        sumFailedSaves += result.failedSaves;
+        sumModelsKilled += result.modelsKilled;
+    }
+
+    const avgHits = sumHits / N;
+    const avgLethalHits = sumLethalHits / N;
+    const avgWounds = sumWounds / N;
+    const avgDevastatingWounds = sumDevastatingWounds / N;
+    const avgSaves = sumSaves / N;
+    const avgFailedSaves = sumFailedSaves / N;
+    const avgModelsKilled = sumModelsKilled / N;
+
+    return {
+        avgHits, avgLethalHits, avgWounds, avgDevastatingWounds, avgSaves, avgFailedSaves, avgModelsKilled,
+    };
+}
+
+export function resolveAttack({   attacks,
+                                        bsWs,
+                                        strength,
+                                        toughness,
+                                        save,
+                                        invuln,
+                                        fnp,
+                                        ap,
+                                        damage,
+                                        wounds,
+                                        sustainedHits,
+                                        lethalHits,
+                                        devastatingWounds,
+                                        criticalHit,
+                                        criticalWound,
+                                        rerollHits,
+                                        rerollWounds,
+                                        sides = 6}) {
     //hit roll + sustained hits
     const hitRolls = [];
     let hitCount = 0;
@@ -142,7 +213,7 @@ export function resolveAttack({
                 damageCount--;
         }
 
-        modelsKilled = damageCount / wounds;
+        modelsKilled = Math.floor(damageCount / wounds);
     }
     else{
 
