@@ -11,8 +11,9 @@ const [strength, setStrength] = useState(4);
 const [toughness, setToughness] = useState(4);
 const [save, setSave] = useState(3);
 const [invuln, setInvuln] = useState(4);
+const [fnp, setFnp] = useState(0);
 const [ap, setAp] = useState(0);
-const [damage, setDamage] = useState(2);
+const [damage, setDamage] = useState(1);
 const [wounds, setWounds] = useState(4);
 const [sustainedHits, setSustainedHits] = useState(0);
 const [lethalHits, setLethalHits] = useState(false);
@@ -25,7 +26,7 @@ const [devastatingWounds, setDevastatingWounds] = useState(false);
 const [result, setResult] = useState(null);
 
 function handleRoll() {
-    const r = resolveAttack({attacks, bsWs, strength, toughness, save, invuln, ap, damage, wounds, sustainedHits, lethalHits, criticalHit, criticalWound, rerollHits, rerollWounds, devastatingWounds});
+    const r = resolveAttack({attacks, bsWs, strength, toughness, save, invuln, fnp, ap, damage, wounds, sustainedHits, lethalHits, criticalHit, criticalWound, rerollHits, rerollWounds, devastatingWounds});
 
     setResult(r);
 }
@@ -160,6 +161,14 @@ return (
                 value={invuln}
                 onChange={(e) => setInvuln(Number(e.target.value))}
             /> 
+        </label>
+        <label>
+            Feel no pain:
+            <input
+                type="number"
+                value={fnp}
+                onChange={(e) => setFnp(Number(e.target.value))}
+            />
         </label>
         <label>
             Wounds:

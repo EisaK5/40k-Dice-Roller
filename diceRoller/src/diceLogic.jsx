@@ -39,7 +39,7 @@ export function rollAndCountSuccess(numDice, target, sides = 6) {
 }
 
 export function resolveAttack({
-    attacks, bsWs, strength, toughness, save, invuln, ap, damage, wounds, sustainedHits, lethalHits, devastatingWounds, criticalHit, criticalWound, rerollHits, rerollWounds, sides = 6,
+    attacks, bsWs, strength, toughness, save, invuln, fnp, ap, damage, wounds, sustainedHits, lethalHits, devastatingWounds, criticalHit, criticalWound, rerollHits, rerollWounds, sides = 6,
 }) {
     //hit roll + sustained hits
     const hitRolls = [];
@@ -132,15 +132,28 @@ export function resolveAttack({
     
     let modelsKilled = 0;
     let currentWounds = wounds;
-    for (let i = 0; i < failedSaves; i++) {  //for splash damage
-        currentWounds -= damage;
 
-        if (currentWounds <= 0) {
-             modelsKilled += 1;
-             currentWounds = wounds;
+    if (fnp > 0) {
+        let damageCount = failedSaves * damage;
+        let totalDamage = damageCount;
+        for (let i = 0; i < totalDamage; i++) {
+            let value = randomInt(1,sides);
+            if (value >= fnp)
+                damageCount--;
         }
 
+        modelsKilled = damageCount / wounds;
+    }
+    else{
 
+        for (let i = 0; i < failedSaves; i++) {  //for splash damage
+            currentWounds -= damage;
+
+            if (currentWounds <= 0) {
+                modelsKilled += 1;
+                currentWounds = wounds;
+            }
+        }
     }
 
     return {
