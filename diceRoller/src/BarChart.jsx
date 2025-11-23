@@ -6,21 +6,20 @@ if (!result)
 
   const data = [
     {name: "Hits", value: result.avgHits},
-    {name: "Lethal Hits", value: result.avgLethalHits},
-    {name: "Devastating Wounds", value: result.avgDevastatingWounds},
-    {name: "Total Wounds", value: result.avgWounds},
-    {name: "Total Saves", value: result.avgSaves},
+    {name: "Lethals", value: result.avgLethalHits},
+    {name: "Dev Wounds", value: result.avgDevastatingWounds},
+    {name: "Wounds", value: result.avgWounds},
     {name: "Failed Saves", value: result.avgFailedSaves},
-    {name: "Total Damage", value: result.avgModelsKilled * damage},
+    {name: "Damage", value: result.avgModelsKilled * damage},
     {name: "Models Killed", value: result.avgModelsKilled}
   ];
 
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={data}>
-        <Bar dataKey="value" fill="green" barSize={30} />
-        <XAxis dataKey="name" stroke="red" />
-        <YAxis stroke="red" />
+        <Bar dataKey="value" fill="#9B5DE5" barSize={30} />
+        <XAxis dataKey="name" stroke="#8884d8" />
+        <YAxis stroke="purple" />
         <Tooltip />
         <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
       </BarChart>
