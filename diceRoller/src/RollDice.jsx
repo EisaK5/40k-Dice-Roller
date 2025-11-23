@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { simulateManySequence } from "./diceLogic.jsx";
 import './RollDice.css'
+import ResultsBarChart from "./BarChart.jsx";
 
 function RollDice() {
 
@@ -215,8 +216,8 @@ return (
                 <p>Failed saves: {result.avgFailedSaves}</p>
                 <p>Total damage: {result.avgModelsKilled * damage}</p>
                 <p>Models killed: {result.avgModelsKilled}</p>
-
-                <BarChart result={result} />
+            
+                <ResultsBarChart result={result} damage={damage} />
             </div>
         )}
     </div>
