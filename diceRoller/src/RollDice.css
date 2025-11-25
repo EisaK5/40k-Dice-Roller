@@ -63,3 +63,32 @@ input[type="number"]::-webkit-outer-spin-button {
     opacity: 0.7
 }
 
+.statBox {
+    padding: 14px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,.25);
+}
+
+.statHits {
+    background-color: #e30612;
+}
+.statLethals{
+    background-color: #f58801;
+}
+.statDevs {
+    background-color: #fecb01;
+}
+.statWounds {
+    background-color: #4eaf32;
+}
+.statFailedSaves {
+    background-color: #43beea;
+}
+.statDamage {
+    background-color: #007cc6;
+}
+.statKilled {
+    background-color: #9e579a;
+}

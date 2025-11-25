@@ -28,10 +28,30 @@ const [N, setN] = useState(100);
 const [result, setResult] = useState(null);
 
 function handleRoll() {
-    //const r = resolveAttack({attacks, bsWs, strength, toughness, save, invuln, fnp, ap, damage, wounds, sustainedHits, lethalHits, criticalHit, criticalWound, rerollHits, rerollWounds, devastatingWounds});
-    const r = simulateManySequence({attacks, bsWs, strength, toughness, save, invuln, fnp, ap, damage, wounds, sustainedHits, lethalHits, criticalHit, criticalWound, rerollHits, rerollWounds, devastatingWounds, N})
+    const profile = {
+    attacks: Number(attacks),
+    bsWs: Number(bsWs),
+    strength: Number(strength),
+    toughness: Number(toughness),
+    save: Number(save),
+    invuln: Number(invuln),
+    fnp: Number(fnp),
+    ap: Number(ap),
+    wounds: Number(wounds),
+    sustainedHits: Number(sustainedHits),
+    criticalHit: Number(criticalHit),
+    criticalWound: Number(criticalWound),
+    N: Math.max(1, Number(N)), // clamp so it can’t be 0
+    damage, // leave damage as string spec
+    rerollHits,
+    rerollWounds,
+    lethalHits,
+    devastatingWounds,
+  };
+    const r = simulateManySequence(profile);
     setResult(r);
 }
+//attacks, bsWs, strength, toughness, save, invuln, fnp, ap, damage, wounds, sustainedHits, lethalHits, criticalHit, criticalWound, rerollHits, rerollWounds, devastatingWounds, N
 
 return (
     <div  className="RollDice">
@@ -42,7 +62,7 @@ return (
                 <input
                     type="number"
                     value={attacks}
-                    onChange={(e) => setAttacks(Number(e.target.value))}
+                    onChange={(e) => setAttacks(e.target.value)}
                 /> 
             </div>
 
@@ -51,7 +71,7 @@ return (
                 <input
                     type="number"
                     value={bsWs}
-                    onChange={(e) => setSkill(Number(e.target.value))}
+                    onChange={(e) => setSkill(e.target.value)}
                 /> 
             </div>
 
@@ -60,7 +80,7 @@ return (
                 <input
                     type="number"
                     value={strength}
-                    onChange={(e) => setStrength(Number(e.target.value))}
+                    onChange={(e) => setStrength(e.target.value)}
                 /> 
             </div>
 
@@ -69,7 +89,7 @@ return (
                 <input
                     type="number"
                     value={ap}
-                    onChange={(e) => setAp(Number(e.target.value))}
+                    onChange={(e) => setAp(e.target.value)}
                 /> 
             </div>
 
@@ -88,7 +108,7 @@ return (
                 <input
                     type="number"
                     value={sustainedHits}
-                    onChange={(e) => setSustainedHits(Number(e.target.value))}
+                    onChange={(e) => setSustainedHits(e.target.value)}
                 />
             </div>
         </div>
@@ -108,7 +128,7 @@ return (
                 <input
                     type="number"
                     check={criticalHit}
-                    onChange={(e) => setCriticalHit(Number(e.target.value))}
+                    onChange={(e) => setCriticalHit(e.target.value)}
                 />
             </div>
 
@@ -127,7 +147,7 @@ return (
                 <input
                     type="number"
                     check={criticalWound}
-                    onChange={(e) => setCriticalWound(Number(e.target.value))}
+                    onChange={(e) => setCriticalWound(e.target.value)}
                 />
             </div>
 
@@ -157,7 +177,7 @@ return (
                 <input
                     type="number"
                     value={toughness}
-                    onChange={(e) => setToughness(Number(e.target.value))}
+                    onChange={(e) => setToughness(e.target.value)}
                 />
             </div>
 
@@ -166,7 +186,7 @@ return (
                 <input
                     type="number"
                     value={save}
-                    onChange={(e) => setSave(Number(e.target.value))}
+                    onChange={(e) => setSave(e.target.value)}
                 /> 
             </div>
 
@@ -175,7 +195,7 @@ return (
                 <input
                     type="number"
                     value={invuln}
-                    onChange={(e) => setInvuln(Number(e.target.value))}
+                    onChange={(e) => setInvuln(e.target.value)}
                 /> 
             </div>
 
@@ -184,7 +204,7 @@ return (
                 <input
                     type="number"
                     value={fnp}
-                    onChange={(e) => setFnp(Number(e.target.value))}
+                    onChange={(e) => setFnp(e.target.value)}
                 />
             </div>
 
@@ -193,7 +213,7 @@ return (
                 <input
                     type="number"
                     value={wounds}
-                    onChange={(e) => setWounds(Number(e.target.value))}
+                    onChange={(e) => setWounds(e.target.value)}
                 /> 
             </div>
 
@@ -202,23 +222,27 @@ return (
                 <input
                     type="number"
                     value={N}
-                    onChange={(e) => setN(Number(e.target.value))}
+                    onChange={(e) => setN(e.target.value)}
                 /> 
             </div>
         </div>
         <button onClick={handleRoll}>Roll</button>
         {result && (
             <div>
-                <p>Hits: {result.avgHits}</p>
-                <p>Lethal Hits: {result.avgLethalHits}</p>
-                <p>Devastating Wounds: {result.avgDevastatingWounds}</p>
-                <p>Total Wounds: {result.avgWounds}</p>
-                <p>Total saves: {result.avgSaves}</p>
-                <p>Failed saves: {result.avgFailedSaves}</p>
-                <p>Total damage: {result.avgTotalDamage}</p>
-                <p>Models killed: {result.avgModelsKilled}</p>
+                <p className="statBox statHits">Hits: {result.avgHits}</p>
+                <p className="statBox statLethals">Lethal Hits: {result.avgLethalHits}</p>
+                <p className="statBox statDevs">Devastating Wounds: {result.avgDevastatingWounds}</p>
+                <p className="statBox statWounds">Total Wounds: {result.avgWounds}</p>
+                <p className="statBox statFailedSaves">Failed saves: {result.avgFailedSaves}</p>
+                <p className="statBox statDamage">Total damage: {result.avgTotalDamage}</p>
+                <p className="statBox statKilled">Models killed: {result.avgModelsKilled}</p>
             
                 <ResultsBarChart result={result} />
+
+                <h2>Profile Ratings</h2>
+
+                
+                
             </div>
         )}
     </div>
