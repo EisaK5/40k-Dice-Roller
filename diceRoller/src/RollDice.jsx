@@ -14,7 +14,7 @@ const [save, setSave] = useState(3);
 const [invuln, setInvuln] = useState(4);
 const [fnp, setFnp] = useState(0);
 const [ap, setAp] = useState(0);
-const [damage, setDamage] = useState(1);
+const [damage, setDamage] = useState("1");
 const [wounds, setWounds] = useState(4);
 const [sustainedHits, setSustainedHits] = useState(0);
 const [lethalHits, setLethalHits] = useState(false);
@@ -76,9 +76,10 @@ return (
             <div className="RollDiceField">
                 <label>Damage: </label>
                 <input
-                    type="number"
+                    type="text"
                     value={damage}
-                    onChange={(e) => setDamage(Number(e.target.value))}
+                    onChange={(e) => setDamage(e.target.value)}
+                    placeholder = "1, D6+2, d3, etc"
                 />
             </div>
 
@@ -214,10 +215,10 @@ return (
                 <p>Total Wounds: {result.avgWounds}</p>
                 <p>Total saves: {result.avgSaves}</p>
                 <p>Failed saves: {result.avgFailedSaves}</p>
-                <p>Total damage: {result.avgModelsKilled * damage}</p>
+                <p>Total damage: {result.avgTotalDamage}</p>
                 <p>Models killed: {result.avgModelsKilled}</p>
             
-                <ResultsBarChart result={result} damage={damage} />
+                <ResultsBarChart result={result} />
             </div>
         )}
     </div>

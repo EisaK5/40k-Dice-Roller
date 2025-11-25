@@ -38,6 +38,36 @@ export function rollAndCountSuccess(numDice, target, sides = 6) {
     };
 }
 
+//regex, allows us to search through the text
+function parseDamage(str) {
+    const regex = /^(\d*)[Dd](\d+)(?:\+(\d+))?$/;
+    const match = str.match(regex);
+
+    if (match) {
+        const numDice = match[1] || 1;
+        const diceSides = match[2];
+        const modifier = match[3] || 0;
+        return {
+            numDice, diceSides, modifier
+        };
+    }
+
+    return { numDice: 0, diceSides: 0, modifier: Number(str)};
+}
+
+function evaluate(damageParsed) {
+    const { numDice, diceSides, modifier } = damageParsed;
+
+    if (numDice == 0) {
+        return modifier;
+    }
+    let total = 0;
+    for (let i = 0; i < numDice; i++) {
+        total += randomInt(1,diceSides);
+    }
+    return total + modifier;
+}
+
 //simulate average function
 //number n how many times the attack sequences are looped
 //get sums of key variables
@@ -52,6 +82,7 @@ export function simulateManySequence({
     let sumDevastatingWounds = 0;
     let sumSaves = 0;
     let sumFailedSaves = 0;
+    let sumTotalDamage = 0;
     let sumModelsKilled = 0;
 
     for (let i = 0; i < N; i++) {
@@ -78,6 +109,7 @@ export function simulateManySequence({
         sumDevastatingWounds += result.devWounds;
         sumSaves += result.saveCount;
         sumFailedSaves += result.failedSaves;
+        sumTotalDamage += result.totalDamage;
         sumModelsKilled += result.modelsKilled;
     }
 
@@ -87,10 +119,11 @@ export function simulateManySequence({
     const avgDevastatingWounds = sumDevastatingWounds / N;
     const avgSaves = sumSaves / N;
     const avgFailedSaves = sumFailedSaves / N;
+    const avgTotalDamage = sumTotalDamage / N;
     const avgModelsKilled = sumModelsKilled / N;
 
     return {
-        avgHits, avgLethalHits, avgWounds, avgDevastatingWounds, avgSaves, avgFailedSaves, avgModelsKilled,
+        avgHits, avgLethalHits, avgWounds, avgDevastatingWounds, avgSaves, avgFailedSaves, avgTotalDamage, avgModelsKilled,
     };
 }
 
@@ -200,32 +233,29 @@ export function resolveAttack({   attacks,
         const saveCount = saveResult.successes;
         const failedSaves = (woundCount + devWounds) - saveCount;
     
-    
     let modelsKilled = 0;
     let currentWounds = wounds;
-
-    if (fnp > 0) {
-        let damageCount = failedSaves * damage;
-        let totalDamage = damageCount;
-        for (let i = 0; i < totalDamage; i++) {
-            let value = randomInt(1,sides);
-            if (value >= fnp)
-                damageCount--;
+    const damageParsed = parseDamage(damage);
+    let totalDamage = 0;
+    for (let i = 0; i < failedSaves; i++) {
+        let damageNum = evaluate(damageParsed);
+        let damageCount = damageNum;
+        if (fnp > 0) {
+            for (let i = 0; i < damageNum; i++) {
+                let value = randomInt(1, sides);
+                if (value >= fnp)
+                    damageCount--;
+            }
         }
-
-        modelsKilled = Math.floor(damageCount / wounds);
-    }
-    else{
-
-        for (let i = 0; i < failedSaves; i++) {  //for splash damage
-            currentWounds -= damage;
-
-            if (currentWounds <= 0) {
+        currentWounds -= damageCount;
+        totalDamage += damageCount;
+        if (currentWounds <= 0) {
                 modelsKilled += 1;
                 currentWounds = wounds;
             }
-        }
     }
+
+
 
     return {
         hitTarget: bsWs, woundTarget, saveTarget,
@@ -234,9 +264,9 @@ export function resolveAttack({   attacks,
 
         woundRolls, woundCount, lethalWounds, devWounds,
 
-        saveRolls: saveResult.rolls, saveCount, failedSaves,
+        saveRolls: saveCount, failedSaves,
 
-        modelsKilled,
+        totalDamage, modelsKilled,
     };
 }
 

@@ -1,6 +1,6 @@
 import { Bar, BarChart, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
 
-export default function ResultsBarChart({result, damage}) {
+export default function ResultsBarChart({result}) {
 if (!result)
   return null;
 
@@ -10,7 +10,7 @@ if (!result)
     {name: "Dev Wounds", value: result.avgDevastatingWounds},
     {name: "Wounds", value: result.avgWounds},
     {name: "Failed Saves", value: result.avgFailedSaves},
-    {name: "Damage", value: result.avgModelsKilled * damage},
+    {name: "Damage", value: result.avgTotalDamage},
     {name: "Models Killed", value: result.avgModelsKilled}
   ];
 
