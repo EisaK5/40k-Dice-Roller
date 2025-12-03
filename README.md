@@ -1,4 +1,4 @@
-# 40k-Dice-Roller
+# Warhammer 40k-Dice-Roller
 ## dice roller for popular table top game warhammer 40k
 
 -uses 6 sided dice rolls 
